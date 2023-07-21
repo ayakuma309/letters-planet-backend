@@ -81,4 +81,27 @@ router.get("/:userId", async(req,res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { Id: parseInt( id ) },
+      include: {
+        author: true,
+      },
+    });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "投稿が見つかりませんでした。" });
+    }
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
