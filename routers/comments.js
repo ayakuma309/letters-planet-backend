@@ -20,7 +20,11 @@ router.post("/comment",isAuthenticated,async (req, res) => {
       },
       //usernameアクセスするためにincludeを使う
       include: {
-        user: true,
+        user: {
+          include: {
+            profile: true,
+          },
+        },
         post: true,
       },
     });
@@ -51,6 +55,36 @@ router.get("/comments/:postId", async (req, res) => {
     res.status(200).json(comments);
   } catch (err) {
     return res.status(500).json({ error: "コメントの取得中にエラーが発生しました" });
+  }
+});
+
+//コメント削除
+router.delete("/comment/:commentId",isAuthenticated,async (req, res) => {
+  const { commentId } = req.params;
+
+  try {
+    const comment = await prisma.comment.findUnique({
+      where: {
+        id: Number(commentId),
+      },
+    });
+
+    if(!comment){
+      return res.status(404).json({error:"コメントが見つかりません"})
+    }
+
+    if(comment.userId !== req.userId){
+      return res.status(403).json({error:"コメントを削除する権限がありません"})
+    }
+
+    await prisma.comment.delete({
+      where:{
+        id:Number(commentId)
+      }
+    })
+    return res.status(200).json({message:"コメントを削除しました"})
+  } catch (err) {
+    return res.status(500).json({ error: "コメントの削除中にエラーが発生しました" });
   }
 });
 
