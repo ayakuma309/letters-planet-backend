@@ -6,25 +6,36 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 const prisma = new PrismaClient();
 
 //投稿API
-router.post("/post",isAuthenticated , async (req, res) => {
-  const {videoId, title, url,  description, tags} = req.body;
+router.post("/post", isAuthenticated, async (req, res) => {
+  const { videoId, url, title, description, tags } = req.body;
 
-  if (!title || !url || !description|| !tags) {
+  if (!title || !url || !description) {
     return res.status(400).json({ error: "All fields are required" });
   }
   try {
+    const tagPromises = tags.map(async (tagName) => {
+      const existingTag = await prisma.tag.findUnique({
+        where: { name: tagName },
+      });
+
+      if (existingTag) {
+        return existingTag;
+      } else {
+        return prisma.tag.create({ data: { name: tagName } });
+      }
+    });
+
+    const createdTags = await Promise.all(tagPromises);
+
     const newPost = await prisma.post.create({
       data: {
-        videoId : videoId,
-        title: title,
-        url: url,
-        description: description,
+        videoId,
+        url,
+        title,
+        description,
         authorId: req.userId,
         tags: {
-          // タグ情報を一括で作成する
-          create: tags.map((tagName) => ({
-            name: tagName,
-          })),
+          connect: createdTags.map((tag) => ({ id: tag.id })),
         },
       },
       //usernameアクセスするためにincludeを使う
@@ -38,12 +49,11 @@ router.post("/post",isAuthenticated , async (req, res) => {
       },
     });
 
-    res.status(200).json(newPost);
+    res.status(201).json(newPost);
   } catch (err) {
-    return res.status(500).json({ err: "something went wrong" });
+    return res.status(500).json({ error: "投稿の作成中にエラーが発生しました" });
   }
 });
-
 //最新投稿取得API
 router.get("/get_latest_posts", async (req, res) => {
   try {
