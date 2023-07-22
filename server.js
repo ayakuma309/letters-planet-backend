@@ -3,6 +3,7 @@ const app = express();
 const authRoute = require('./routers/auth');
 const usersRoute = require('./routers/users');
 const postsRoute = require('./routers/posts');
+const commentsRoute = require('./routers/comments');
 
 const cors = require('cors');
 
@@ -18,5 +19,6 @@ app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
+app.use("/api/comments", commentsRoute);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
