@@ -90,6 +90,7 @@ router.get("user/:userId", async(req,res) => {
   }
 });
 
+//投稿の詳細を取得
 router.get("/:id", async (req, res) => {
   const { id }  = req.params;
 
@@ -116,4 +117,41 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+//投稿の削除
+router.delete("/post/:id", isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ message: "投稿が見つかりませんでした。" });
+    }
+
+    if (post.authorId !== req.userId) {
+      return res
+        .status(401)
+        .json({ message: "投稿の削除権限がありません。" });
+    }
+
+    await prisma.post.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    res.status(200).json({ message: "投稿を削除しました。" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
