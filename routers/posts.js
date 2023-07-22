@@ -7,10 +7,10 @@ const prisma = new PrismaClient();
 
 //投稿API
 router.post("/post",isAuthenticated , async (req, res) => {
-  const {videoId, title, url,  description } = req.body;
+  const {videoId, title, url,  description, tags} = req.body;
 
-  if (!title || !url || !description) {
-    return res.status(400).json({ error: "is required" });
+  if (!title || !url || !description|| !tags) {
+    return res.status(400).json({ error: "All fields are required" });
   }
   try {
     const newPost = await prisma.post.create({
@@ -20,6 +20,12 @@ router.post("/post",isAuthenticated , async (req, res) => {
         url: url,
         description: description,
         authorId: req.userId,
+        tags: {
+          // タグ情報を一括で作成する
+          create: tags.map((tagName) => ({
+            name: tagName,
+          })),
+        },
       },
       //usernameアクセスするためにincludeを使う
       include: {
@@ -28,6 +34,7 @@ router.post("/post",isAuthenticated , async (req, res) => {
             profile: true,
           }
         },
+        tags: true,
       },
     });
 
@@ -52,6 +59,7 @@ router.get("/get_latest_posts", async (req, res) => {
             profile: true,
           }
         },
+        tags: true,
       },
     });
     return res.status(200).json(latestPosts);
@@ -61,7 +69,7 @@ router.get("/get_latest_posts", async (req, res) => {
 });
 
 //その閲覧しているユーザーの投稿内容だけを取得
-router.get("/:userId", async(req,res) => {
+router.get("user/:userId", async(req,res) => {
   const user = req.params;
   try {
     const userPosts = await prisma.post.findMany({
@@ -73,6 +81,7 @@ router.get("/:userId", async(req,res) => {
       },
       include: {
         author: true,
+        tags: true,
       },
     });
     return res.status(200).json(userPosts);
@@ -82,13 +91,14 @@ router.get("/:userId", async(req,res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  const { id }  = req.params;
 
   try {
     const post = await prisma.post.findUnique({
-      where: { Id: parseInt( id ) },
+      where: { id: parseInt( id ) },
       include: {
         author: true,
+        tags: true,
       },
     });
 
