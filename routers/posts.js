@@ -103,11 +103,10 @@ router.get("user/:userId", async(req,res) => {
 //投稿の詳細を取得
 router.get("/post/:id", async (req, res) => {
   const { id }  = req.params;
-  const postId = parseInt(id);
   try {
     const post = await prisma.post.findUnique({
       where: {
-        id: postId
+        id: Number(id)
       },
       include: {
         author: true,
