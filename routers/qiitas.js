@@ -55,3 +55,28 @@ router.post("/qiita", isAuthenticated, async (req, res) => {
     return res.status(500).json({ error: "投稿の作成中にエラーが発生しました" });
   }
 });
+//投稿取得API
+router.get("/get_qiita_articles", async (req, res) => {
+  try {
+    const qiitaArticles = await prisma.qiita.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+       //usernameアクセスするためにincludeを使う
+      include: {
+        author: {
+          include: {
+            profile: true,
+          }
+        },
+        tags: true,
+      },
+    });
+    return res.status(200).json(qiitaArticles);
+  } catch (err) {
+    return res.status(500).json({ err: "something went wrong" });
+  }
+});
+
+
+module.exports = router;
