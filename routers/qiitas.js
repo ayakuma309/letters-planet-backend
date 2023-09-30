@@ -78,5 +78,41 @@ router.get("/get_qiita_articles", async (req, res) => {
   }
 });
 
+//投稿の削除
+router.delete("/qiita/:id", isAuthenticated, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const qiita = await prisma.qiita.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!qiita) {
+      return res
+        .status(404)
+        .json({ message: "投稿が見つかりませんでした。" });
+    }
+
+    if (qiita.authorId !== req.userId) {
+      return res
+        .status(401)
+        .json({ message: "投稿の削除権限がありません。" });
+    }
+
+    // 投稿の削除
+    await prisma.qiita.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    res.status(200).json({ message: "投稿を削除しました。" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
