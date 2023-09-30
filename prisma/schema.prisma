@@ -19,6 +19,7 @@ model User {
   likes     Like[]
   comments Comment[]
   profile Profile?
+  qiitas    Qiita[]
 }
 
 model Post {
@@ -68,3 +69,21 @@ model Comment {
 }
 
 
+model Qiita  {
+  id        Int        @id @default(autoincrement())
+  qiitaId   String
+  title     String
+  url       String
+  userName  String
+  profileImageUrl String
+  createdAt DateTime   @default(now())
+  authorId  Int
+  author    User       @relation(fields: [authorId], references: [id])
+  tags      QiitaTag[]
+}
+
+model QiitaTag {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  qiitas Qiita[]
+}

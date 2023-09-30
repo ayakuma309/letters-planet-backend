@@ -13,7 +13,7 @@ function isAuthenticated(req, res, next) {
 
   jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
     if (err) {
-      return res.status(401).json({ error: "token is invalid" });
+      return res.status(401).json({ error: "ログインしてください" });
     }
 
     req.userId = decoded.id;
