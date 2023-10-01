@@ -24,3 +24,9 @@ app.use("/api/comments", commentsRoute);
 app.use("/api/qiitas", qiitasRoute);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Internal Server Error');
+});

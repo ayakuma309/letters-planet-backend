@@ -74,6 +74,7 @@ router.get("/get_qiita_articles", async (req, res) => {
     });
     return res.status(200).json(qiitaArticles);
   } catch (err) {
+    next(err);
     return res.status(500).json({ err: "something went wrong" });
   }
 });
