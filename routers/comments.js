@@ -44,11 +44,7 @@ router.get("/comments/:postId", async (req, res) => {
         postId: Number(postId),
       },
       include: {
-        user: {
-          include: {
-            profile: true,
-          },
-        }
+        user: true,
       },
     });
 
