@@ -5,6 +5,7 @@ const usersRoute = require('./routers/users');
 const postsRoute = require('./routers/posts');
 const commentsRoute = require('./routers/comments');
 const qiitasRoute = require('./routers/qiitas');
+const bookmarksRoute = require('./routers/bookmarks');
 
 const cors = require('cors');
 
@@ -22,6 +23,7 @@ app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
 app.use("/api/comments", commentsRoute);
 app.use("/api/qiitas", qiitasRoute);
+app.use("/api/bookmarks", bookmarksRoute);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
