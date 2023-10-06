@@ -21,6 +21,7 @@ model User {
   profile Profile?
   qiitas    Qiita[]
   bookmarks Bookmark[]
+  books     Book[]
 }
 
 model Post {
@@ -99,4 +100,21 @@ model QiitaTag {
   id    Int     @id @default(autoincrement())
   name  String  @unique
   qiitas Qiita[]
+}
+
+model Book {
+  id        Int       @id @default(autoincrement())
+  bookId    String    @unique
+  title     String
+  description String
+  image    String
+  authorId  Int
+  author    User       @relation(fields: [authorId], references: [id])
+  tags      BookTag[]
+}
+
+model BookTag {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  books Book[]
 }
