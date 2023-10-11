@@ -65,7 +65,7 @@ router.delete("/bookmark/:bookmarkId",isAuthenticated,async (req, res) => {
   try {
     const bookmark = await prisma.bookmark.findUnique({
       where: {
-        id: Number(bookmarkId),
+        id: bookmarkId,
       },
     });
 
@@ -79,11 +79,12 @@ router.delete("/bookmark/:bookmarkId",isAuthenticated,async (req, res) => {
 
     await prisma.bookmark.delete({
       where:{
-        id:Number(bookmarkId)
+        id: bookmarkId
       }
     })
     return res.status(200).json({message:"削除しました"})
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "削除中にエラーが発生しました" });
   }
 });
