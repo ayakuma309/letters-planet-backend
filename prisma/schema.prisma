@@ -1,13 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
 
 generator client {
   provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -15,13 +13,6 @@ model User {
   username  String
   email     String   @unique
   password  String
-  posts     Post[]
-  likes     Like[]
-  comments Comment[]
-  profile Profile?
-  qiitas    Qiita[]
-  bookmarks Bookmark[]
-  books     Book[]
 }
 
 model Post {
@@ -29,31 +20,12 @@ model Post {
   videoId     String
   title       String
   url         String
-  description String
-  createdAt   DateTime   @default(now())
-  authorId    Int
-  author      User       @relation(fields: [authorId], references: [id])
-  likes       Like[]
+  releaseAt   DateTime   @default(now())
   tags        Tag[]      @relation("PostTag")
-  comments Comment[]
+  tweets Tweet[]
   bookmarks Bookmark[]
 }
 
-model Profile {
-  id Int @id @default(autoincrement())
-  bio String?
-  profileImageUrl String?
-  userId Int @unique
-  user User @relation(fields: [userId], references: [id])
-}
-
-model Like {
-  id       Int      @id @default(autoincrement())
-  postId   Int
-  post     Post     @relation(fields: [postId], references: [id])
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
-}
 
 model Tag {
   id    Int     @id @default(autoincrement())
@@ -61,25 +33,19 @@ model Tag {
   posts Post[]  @relation("PostTag")
 }
 
-model Comment {
+model Tweet {
   id        Int        @id @default(autoincrement())
   content   String
-  createdAt DateTime   @default(now())
   postId    Int
   post      Post       @relation(fields: [postId], references: [id])
-  userId    Int
-  user      User       @relation(fields: [userId], references: [id])
 }
 
 model Bookmark {
   id      String     @id @default(uuid())
   title   String
   startAt Decimal
-  userId  Int
-  user    User @relation(fields: [userId], references: [id])
   postId Int
   post    Post @relation(fields: [postId], references: [id])
-  createdAt DateTime @default(now())
 }
 
 
@@ -88,11 +54,8 @@ model Qiita  {
   qiitaId   String
   title     String
   url       String
-  userName  String
   profileImageUrl String
   createdAt DateTime   @default(now())
-  authorId  Int
-  author    User       @relation(fields: [authorId], references: [id])
   tags      QiitaTag[]
 }
 
@@ -108,8 +71,6 @@ model Book {
   title     String
   description String
   image    String
-  authorId  Int
-  author    User       @relation(fields: [authorId], references: [id])
   tags      BookTag[]
 }
 
