@@ -32,14 +32,11 @@ router.post("/book", isAuthenticated, async (req, res) => {
         title,
         description,
         image,
-        authorId: req.userId,
         tags: {
           connect: createdTags.map((tag) => ({ id: tag.id })),
         },
       },
-      //usernameアクセスするためにincludeを使う
       include: {
-        author: true,
         tags: true,
       },
     });
@@ -56,7 +53,6 @@ router.get("/get_books", async (req, res) => {
     const books = await prisma.book.findMany({
        //usernameアクセスするためにincludeを使う
       include: {
-        author: true,
         tags: true,
       },
     });
@@ -82,12 +78,6 @@ router.delete("/book/:id", isAuthenticated, async (req, res) => {
       return res
         .status(404)
         .json({ message: "投稿が見つかりませんでした。" });
-    }
-
-    if (book.authorId !== req.userId) {
-      return res
-        .status(401)
-        .json({ message: "投稿の削除権限がありません。" });
     }
 
     // 投稿の削除
