@@ -19,15 +19,9 @@ router.post("/bookmark",isAuthenticated,async (req, res) => {
         title,
         startAt,
         postId: Number(postId),
-        userId: req.userId,
       },
       //usernameアクセスするためにincludeを使う
       include: {
-        user: {
-          include: {
-            profile: true,
-          },
-        },
         post: true,
       },
     });
@@ -45,9 +39,6 @@ router.get("/bookmarks/:postId", async (req, res) => {
     const bookmarks = await prisma.bookmark.findMany({
       where: {
         postId: Number(postId),
-      },
-      include: {
-        user: true,
       },
     });
 
@@ -71,10 +62,6 @@ router.delete("/bookmark/:bookmarkId",isAuthenticated,async (req, res) => {
 
     if(!bookmark){
       return res.status(404).json({error:"見つかりません"})
-    }
-
-    if(bookmark.userId !== req.userId){
-      return res.status(403).json({error:"削除する権限がありません"})
     }
 
     await prisma.bookmark.delete({
