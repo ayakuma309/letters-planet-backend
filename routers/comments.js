@@ -12,19 +12,12 @@ router.post("/comment",isAuthenticated,async (req, res) => {
     return res.status(400).json({ error: "コメントを入力してください" });
   }
   try {
-    const newComment = await prisma.comment.create({
+    const newComment = await prisma.tweet.create({
       data: {
         content: content,
         postId: Number(postId),
-        userId: req.userId,
       },
-      //usernameアクセスするためにincludeを使う
       include: {
-        user: {
-          include: {
-            profile: true,
-          },
-        },
         post: true,
       },
     });
@@ -39,12 +32,9 @@ router.post("/comment",isAuthenticated,async (req, res) => {
 router.get("/comments/:postId", async (req, res) => {
   const { postId } = req.params;
   try {
-    const comments = await prisma.comment.findMany({
+    const comments = await prisma.tweet.findMany({
       where: {
         postId: Number(postId),
-      },
-      include: {
-        user: true,
       },
     });
 
@@ -59,7 +49,7 @@ router.delete("/comment/:commentId",isAuthenticated,async (req, res) => {
   const { commentId } = req.params;
 
   try {
-    const comment = await prisma.comment.findUnique({
+    const comment = await prisma.tweet.findUnique({
       where: {
         id: Number(commentId),
       },
@@ -69,11 +59,7 @@ router.delete("/comment/:commentId",isAuthenticated,async (req, res) => {
       return res.status(404).json({error:"コメントが見つかりません"})
     }
 
-    if(comment.userId !== req.userId){
-      return res.status(403).json({error:"コメントを削除する権限がありません"})
-    }
-
-    await prisma.comment.delete({
+    await prisma.tweet.delete({
       where:{
         id:Number(commentId)
       }
