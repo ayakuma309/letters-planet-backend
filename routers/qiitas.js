@@ -32,20 +32,13 @@ router.post("/qiita", isAuthenticated, async (req, res) => {
         qiitaId,
         title,
         url,
-        userName,
         profileImageUrl,
-        authorId: req.userId,
         tags: {
           connect: createdTags.map((tag) => ({ id: tag.id })),
         },
       },
       //usernameアクセスするためにincludeを使う
       include: {
-        author: {
-          include: {
-            profile: true,
-          }
-        },
         tags: true,
       },
     });
@@ -64,11 +57,6 @@ router.get("/get_qiita_articles", async (req, res) => {
       },
        //usernameアクセスするためにincludeを使う
       include: {
-        author: {
-          include: {
-            profile: true,
-          }
-        },
         tags: true,
       },
     });
@@ -94,12 +82,6 @@ router.delete("/qiita/:id", isAuthenticated, async (req, res) => {
       return res
         .status(404)
         .json({ message: "投稿が見つかりませんでした。" });
-    }
-
-    if (qiita.authorId !== req.userId) {
-      return res
-        .status(401)
-        .json({ message: "投稿の削除権限がありません。" });
     }
 
     // 投稿の削除
