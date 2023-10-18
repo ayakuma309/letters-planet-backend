@@ -9,7 +9,6 @@ const prisma = new PrismaClient();
 router.post("/bookmark",isAuthenticated,async (req, res) => {
   //受け取る title startAt
   const { postId, title, startAt } = req.body;
-  console.log(req.body)
   if (!title) {
     return res.status(400).json({ error: "入力してください" });
   }
