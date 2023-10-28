@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 //投稿API
 router.post("/qiita", isAuthenticated, async (req, res) => {
-  const { qiitaId, title, url, userName, profileImageUrl, tags } = req.body;
+  const { qiitaId, title, url, profileImageUrl, tags } = req.body;
   if (!qiitaId || !title || !url) {
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -37,7 +37,6 @@ router.post("/qiita", isAuthenticated, async (req, res) => {
           connect: createdTags.map((tag) => ({ id: tag.id })),
         },
       },
-      //usernameアクセスするためにincludeを使う
       include: {
         tags: true,
       },
@@ -52,9 +51,6 @@ router.post("/qiita", isAuthenticated, async (req, res) => {
 router.get("/get_qiita_articles", async (req, res) => {
   try {
     const qiitaArticles = await prisma.qiita.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
        //usernameアクセスするためにincludeを使う
       include: {
         tags: true,
