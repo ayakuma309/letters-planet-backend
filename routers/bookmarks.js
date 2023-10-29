@@ -17,7 +17,7 @@ router.post("/bookmark",isAuthenticated,async (req, res) => {
       data: {
         title,
         startAt,
-        youTubeIdId: Number(postId),
+        youTubeId: Number(postId),
       },
       //usernameアクセスするためにincludeを使う
       include: {
