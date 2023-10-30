@@ -27,7 +27,7 @@ router.post("/post", isAuthenticated, async (req, res) => {
 
     const createdTags = await Promise.all(tagPromises);
 
-    const newPost = await prisma.post.create({
+    const newPost = await prisma.youTube.create({
       data: {
         videoId,
         url,
@@ -51,7 +51,7 @@ router.post("/post", isAuthenticated, async (req, res) => {
 //最新投稿取得API
 router.get("/get_latest_posts", async (req, res) => {
   try {
-    const latestPosts = await prisma.post.findMany({
+    const latestPosts = await prisma.youTube.findMany({
       orderBy: {
         releaseAt: "desc",
       },
@@ -71,7 +71,7 @@ router.get("/get_latest_posts", async (req, res) => {
 router.get("/post/:id", async (req, res) => {
   const { id }  = req.params;
   try {
-    const post = await prisma.post.findUnique({
+    const post = await prisma.youTube.findUnique({
       where: {
         id: Number(id)
       },
@@ -98,7 +98,7 @@ router.delete("/post/:id", isAuthenticated, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const post = await prisma.post.findUnique({
+    const post = await prisma.youTube.findUnique({
       where: {
         id: parseInt(id),
       },
@@ -110,7 +110,7 @@ router.delete("/post/:id", isAuthenticated, async (req, res) => {
         .json({ message: "投稿が見つかりませんでした。" });
     }
 
-    await prisma.post.delete({
+    await prisma.youTube.delete({
       where: {
         id: parseInt(id),
       },
