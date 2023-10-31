@@ -73,7 +73,7 @@ router.get("/post/:id", async (req, res) => {
   try {
     const post = await prisma.youTube.findUnique({
       where: {
-        id: Number(id)
+        id: parseInt(id)
       },
       include: {
         tags: true,

@@ -17,7 +17,7 @@ router.post("/bookmark",isAuthenticated,async (req, res) => {
       data: {
         title,
         startAt,
-        youTubeId: Number(postId),
+        youTubeId: parseInt(postId),
       },
       //usernameアクセスするためにincludeを使う
       include: {
@@ -37,7 +37,7 @@ router.get("/bookmarks/:postId", async (req, res) => {
   try {
     const bookmarks = await prisma.bookmark.findMany({
       where: {
-        youTubeId: Number(postId),
+        youTubeId: parseInt(postId),
       },
     });
 

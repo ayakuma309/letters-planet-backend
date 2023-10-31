@@ -15,7 +15,7 @@ router.post("/comment",isAuthenticated,async (req, res) => {
     const newComment = await prisma.tweet.create({
       data: {
         content: content,
-        postId: Number(postId),
+        postId: parseInt(postId),
       },
       include: {
         post: true,
@@ -34,7 +34,7 @@ router.get("/comments/:postId", async (req, res) => {
   try {
     const comments = await prisma.tweet.findMany({
       where: {
-        postId: Number(postId),
+        postId: parseInt(postId),
       },
     });
 
@@ -51,7 +51,7 @@ router.delete("/comment/:commentId",isAuthenticated,async (req, res) => {
   try {
     const comment = await prisma.tweet.findUnique({
       where: {
-        id: Number(commentId),
+        id: parseInt(commentId),
       },
     });
 
@@ -61,7 +61,7 @@ router.delete("/comment/:commentId",isAuthenticated,async (req, res) => {
 
     await prisma.tweet.delete({
       where:{
-        id:Number(commentId)
+        id:parseInt(commentId)
       }
     })
     return res.status(200).json({message:"コメントを削除しました"})
